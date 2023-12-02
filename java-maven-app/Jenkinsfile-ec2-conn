@@ -1,0 +1,46 @@
+def gv
+
+pipeline {   
+    agent any
+    tools {
+        maven 'maven-3.9'
+    }
+    stages {
+        stage("init") {
+            steps {
+                script {
+                    echo "Init stage"
+                }
+            }
+        }
+        stage("build jar") {
+            steps {
+                script {
+                    echo "Building stage"
+
+                }
+            }
+        }
+
+        stage("build image") {
+            steps {
+                script {
+                    echo "Image stage"
+                }
+            }
+        }
+
+        stage("deploy") {
+            steps {
+                script {
+                    def dockerCommand = 'docker run -d -p 3000:3080 foundryvault/demo-app:1.0'
+                    echo '[LOG] Deploying the application'
+                    sshagent(['ec2-server-key']) {
+                       sh "ssh -o StrictHostKeyChecking=no ec2-user@18.222.204.186 ${dockerCommand}"
+                    }
+                }
+            }
+        }               
+    }
+} 
+
